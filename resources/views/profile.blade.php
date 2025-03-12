@@ -118,6 +118,13 @@
                                 <p class="mb-1"><strong>Pickup Time:</strong> {{ $pickup->pickup_time }}</p>
                                 <p class="mb-1"><strong>Address:</strong> {{ $pickup->address }}</p>
                                 <p class="mb-1"><strong>Status:</strong> 
+
+
+
+
+
+
+                                
                                     @if($pickup->status === 'pending')
                                         <span class="badge bg-warning text-dark">Pending</span>
                                     @elseif($pickup->status === 'completed')
