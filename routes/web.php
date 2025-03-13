@@ -163,9 +163,14 @@ Route::get('/admin/pickups/today', [PickupController::class, 'getTodayPickups'])
 Route::post('/admin/pickup/complete/{id}', [PickupController::class, 'completePickup']);
 
 Route::get('/admin/pickups/today', function () {
-    $pickups = Pickup::whereDate('date', today())->get(); // ✅ Use 'date' column
-    return response()->json($pickups);
+    $pickups = Pickup::whereDate('date', today())->get();
+    return response()->json([
+        'sql' => Pickup::whereDate('date', today())->toSql(),
+        'bindings' => Pickup::whereDate('date', today())->getBindings(),
+        'data' => $pickups
+    ]);
 });
+
 
 Route::get('/scrap-data', function () {
     // Fetch scrap pickup data grouped by category
@@ -179,3 +184,14 @@ Route::get('/scrap-data', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
 });
+
+Route::middleware(['api'])->group(function () {
+    Route::get('/test', function () {
+        return response()->json(['message' => 'CORS enabled!'])
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    });
+});
+
+Route::get('/admin/pickups', [PickupController::class, 'showPickups'])->name('admin.pickups');
