@@ -52,6 +52,11 @@
                 @endif
             </tbody>
         </table>
+
+        <!-- Pagination Links -->
+        <div class="d-flex justify-content-center">
+            {{ $pickups->links('pagination::bootstrap-5') }}
+        </div>
     </div>
 </body>
 </html>

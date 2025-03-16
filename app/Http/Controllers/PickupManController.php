@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Pickup;
+use App\Mail\PickupUpdatedMail;
+
 
 class PickupManController extends Controller
 {
@@ -24,32 +27,35 @@ class PickupManController extends Controller
         return view('admin.pickupManDashboard', compact('pickups', 'totalPickups', 'pendingPickups', 'totalWeight', 'totalPayments'));
     }
 
-    // Function to update pickup details
+   
+
+   
+    
+   
     public function update(Request $request, $id)
-    {
-        // Validate input data
-        $request->validate([
-            'total_weight' => 'required|numeric|min:0',
-            'amount_paid' => 'required|numeric|min:0',
-        ]);
+{
+    $pickup = Pickup::findOrFail($id);
 
-        // Find the pickup entry
-        $pickup = Pickup::findOrFail($id);
+    // Update weight and payment first
+    $pickup->total_weight = (float) $request->input('total_weight', 0);
+    $pickup->amount_paid = $request->input('amount_paid');
 
-        // Log the incoming request data for debugging
-        Log::info('Updating Pickup ID: ' . $id, $request->all());
-
-        // Update weight and payment
-        $pickup->total_weight = (float) $request->input('total_weight', 0);
-        $pickup->amount_paid = $request->input('amount_paid');
-
-        // Change status to 'completed' if amount is entered
-        if ($pickup->amount_paid > 0) {
-            $pickup->status = 'completed';
-        }
-
-        $pickup->save();
-
-        return redirect()->back()->with('success', 'Pickup updated successfully!');
+    // Change status if amount is paid
+    if ($pickup->amount_paid > 0) {
+        $pickup->status = 'completed';
     }
+
+    $pickup->save(); // Save changes before sending email
+
+    // Send email only if email exists
+    if (!empty($pickup->email)) {
+        Mail::to($pickup->email)->send(new PickupUpdatedMail($pickup));
+    }
+
+    return redirect()->back()->with('success', 'Pickup updated and email sent successfully!');
+}
+    
+    
+
+    
 }

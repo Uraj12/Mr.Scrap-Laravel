@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PickupManController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PickupController;
+use Illuminate\Http\Request; // ✅ Correct
 
 
 // ✅ Home Route (Public)
@@ -195,3 +196,29 @@ Route::middleware(['api'])->group(function () {
 });
 
 Route::get('/admin/pickups', [PickupController::class, 'showPickups'])->name('admin.pickups');
+
+Route::get('/scan-scrap', function () {
+    return view('scan-scrap'); // Ensure this matches your Blade file name
+});
+Route::view('/scan-scrap', 'scan-scrap');
+
+
+use Illuminate\Support\Facades\Http;
+
+Route::view('/scan-scrap', 'scan-scrap');
+
+Route::post('/upload-image', function (Request $request) {
+    // Validate uploaded image
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
+
+    $image = $request->file('image');
+    $imagePath = $image->getPathname();
+
+    // Send image to Django API
+    $response = Http::attach('image', file_get_contents($imagePath), $image->getClientOriginalName())
+        ->post('http://127.0.0.1:8000/predict/');
+
+    return back()->with('result', $response->json()['prediction']);
+});

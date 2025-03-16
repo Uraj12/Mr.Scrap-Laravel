@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="http://127.0.0.1:8000/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://127.0.0.1:8000/css/navbar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
 </head>
 <body>
 
@@ -43,11 +44,26 @@
                         </ul>
                     </li>
                 </ul>
+                <div class="d-flex align-items-center">
+    <a href="http://127.0.0.1:8000/scrap-rate-list" class="btn btn-outline-primary me-2">Check Rate List</a>
+    <a href="#" class="btn btn-success">Sell Scrap</a>
 
-                <div class="d-flex">
-                    <a href="http://127.0.0.1:8000/scrap-rate-list" class="btn btn-outline-primary me-2">Check Rate List</a>
-                    <a href="#" class="btn btn-success">Sell Scrap</a>
-                </div>
+    @if(Auth::check())
+        <!-- Profile Icon -->
+        <a href="http://127.0.0.1:8000/profile" class="user-icon">
+            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+        </a>
+
+        <!-- Camera Button for Scanning Scrap -->
+        <button class="camera-button" onclick="openCamera()">
+            📷
+        </button>
+    @else
+        <a href="http://127.0.0.1:8000/login" class="btn btn-primary">Login</a>
+    @endif
+</div>
+
+
             </div>
         </div>
     </nav>
@@ -56,6 +72,12 @@
     <div class="container mt-5 pt-5">
         @yield('content')  <!-- Ensure content from child views is loaded here -->
     </div>
+    <script>
+    function openCamera() {
+        window.location.href = "http://127.0.0.1:8000/scan-scrap";  // Redirects to scan-scrap.blade.php
+    }
+</script>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

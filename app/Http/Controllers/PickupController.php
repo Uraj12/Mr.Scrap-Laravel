@@ -40,7 +40,8 @@ class PickupController extends Controller
 
     public function showPickups()
     {
-        $pickups = Pickup::all(); // Fetching all pickups from the database
-        return view('admin.pickup', compact('pickups')); // Passing the variable to the view
+        $pickups = Pickup::paginate(10); // ✅ Fetch only 10 records per page
+        return view('admin.pickup', compact('pickups'));
     }
+    
 }
