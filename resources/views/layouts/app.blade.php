@@ -74,9 +74,89 @@
     </div>
     <script>
     function openCamera() {
-        window.location.href = "http://127.0.0.1:8000/scan-scrap";  // Redirects to scan-scrap.blade.php
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                let videoElement = document.createElement("video");
+                videoElement.srcObject = stream;
+                videoElement.autoplay = true;
+                videoElement.style.width = "100%";
+                videoElement.style.height = "auto";
+                
+                // Create a container for the video
+                let videoContainer = document.createElement("div");
+                videoContainer.style.position = "fixed";
+                videoContainer.style.top = "0";
+                videoContainer.style.left = "0";
+                videoContainer.style.width = "100vw";
+                videoContainer.style.height = "100vh";
+                videoContainer.style.background = "rgba(0,0,0,0.8)";
+                videoContainer.style.display = "flex";
+                videoContainer.style.justifyContent = "center";
+                videoContainer.style.alignItems = "center";
+                videoContainer.appendChild(videoElement);
+                
+                // Create a capture button
+                let captureButton = document.createElement("button");
+                captureButton.innerText = "Capture";
+                captureButton.style.position = "absolute";
+                captureButton.style.bottom = "20px";
+                captureButton.style.padding = "10px 20px";
+                captureButton.style.background = "#28a745";
+                captureButton.style.color = "#fff";
+                captureButton.style.border = "none";
+                captureButton.style.cursor = "pointer";
+                captureButton.onclick = function () {
+                    captureImage(videoElement);
+                    stream.getTracks().forEach(track => track.stop()); // Stop the camera
+                    document.body.removeChild(videoContainer); // Remove video container
+                };
+
+                videoContainer.appendChild(captureButton);
+                document.body.appendChild(videoContainer);
+            })
+            .catch(function (err) {
+                alert("Camera access denied! Please allow camera permissions.");
+                console.error(err);
+            });
     }
+
+    function captureImage(video) {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        let context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        let imageData = canvas.toDataURL("image/png");
+
+        // Send image to your Django API
+        uploadImage(imageData);
+    }
+
+    function uploadImage(imageData) {
+    fetch("http://127.0.0.1:8080/api/predict/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: imageData }),
+        mode: "cors",  // ✅ Ensure cross-origin requests work
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Bad request: " + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert("Prediction: " + data.result);
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+
 </script>
+
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

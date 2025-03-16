@@ -10,7 +10,7 @@ class ScrapController extends Controller
     public function predictScrap(Request $request)
     {
         $client = new Client();
-        $url = 'http://127.0.0.1:8000/api/predict/'; // Django API URL
+        $url = 'http://127.0.0.1:8080/api/predict/'; // Django API URL
 
         try {
             $response = $client->post($url, [
