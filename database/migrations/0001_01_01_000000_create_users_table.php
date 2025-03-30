@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Users Table
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -21,15 +22,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Password Reset Tokens Table
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
+            $table->index('email'); // ✅ Index for better search performance
         });
 
+        // Sessions Table
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // ✅ Foreign key
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -42,8 +46,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

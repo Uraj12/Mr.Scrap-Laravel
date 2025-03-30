@@ -1,106 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scrap Rate List</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin-top: 20px;
-      text-align: center;
-    }
-    .search-bar {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-    .card {
-      background: white;
-      width: 45%;
-      margin-bottom: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: left;
-    }
-    .card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-    .card h2 {
-      color: #28a745;
-      margin: 10px 0;
-    }
-    .card p {
-      color: #555;
-    }
-    .card .price {
-      font-weight: bold;
-      font-size: 18px;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
+@extends('layouts.app')
 
-  <div class="container">
-    
-    <input type="text" class="search-bar" placeholder="Search for scrap type..." onkeyup="searchScrap()">
-    <div class="card-container" id="scrapList">
-    @foreach($scrapRates as $scrapRate)
-<div class="card">
-  <img src="{{ asset('images/'.$scrapRate->scrap.'.jpg') }}" alt="{{ $scrapRate->scrap }}">
-  <h2>{{ $scrapRate->scrap }}</h2>
- 
-  <p class="price">Rate: ₹{{ number_format($scrapRate->priceperkg, 2) }}/kg</p>
-</div>
-@endforeach
+@section('title', 'Scrap Rate List')
 
+@section('content')
 
+<!-- Scrap Rate List -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
 
+            <!-- Stylish Search Bar with Space Between Bar and Button -->
+            <div class="d-flex align-items-center mb-4">
+                <input type="text" id="search-bar" class="form-control form-control-lg shadow-sm me-3" placeholder="🔍 Search for scrap type..." onkeyup="searchScrap()">
+                <button class="btn btn-success btn-lg shadow-sm px-4" type="button" onclick="clearSearch()">
+                    Clear
+                </button>
+            </div>
 
+            <!-- Scrap Cards -->
+            <div class="row" id="scrapList">
+                @foreach($scrapRates as $scrapRate)
+                <div class="col-md-6 mb-4 scrap-card">
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-success">{{ $scrapRate->scrap }}</h5>
+                            <p class="card-text">Rate: <span class="badge bg-primary fs-6">₹{{ number_format($scrapRate->priceperkg, 2) }}/kg</span></p>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
 
+            <!-- Note Section -->
+            <div class="text-center mt-5">
+                <p class="text-muted">💡 <strong>Note:</strong> For Bulk scrap (Commercial) prices may vary.</p>
+                <a href="{{ route('contact.us') }}" class="btn btn-success btn-lg">📞 Contact us to know more</a>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="text-center mt-lg-5 my-8 my-lg-0 mb-lg-8">
-    <span class="body-md">Note: For Bulk scrap (Commercial) prices may vary.</span>
-    <a href="{{ route('contact.us') }}" class="title-md fg-success-2"> Contact us to know more <i class="icon-arrow-right"></i></a>
-  </div>
+</div>
 
-  <script>
+<!-- JavaScript for Search -->
+<script>
     function searchScrap() {
-      let input = document.querySelector(".search-bar").value.toLowerCase();
-      let cards = document.querySelectorAll(".card");
-      cards.forEach(card => {
-        let title = card.querySelector("h2").textContent.toLowerCase();
-        if (title.includes(input)) {
-          card.style.display = "block";
-        } else {
-          card.style.display = "none";
-        }
-      });
+        let input = document.getElementById("search-bar").value.toLowerCase();
+        let cards = document.querySelectorAll(".scrap-card");
+
+        cards.forEach(card => {
+            let title = card.querySelector(".card-title").textContent.toLowerCase();
+            if (title.includes(input)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
     }
-  </script>
-</body>
-</html>
+
+    function clearSearch() {
+        document.getElementById("search-bar").value = "";
+        searchScrap();
+    }
+</script>
+
+@endsection

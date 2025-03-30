@@ -15,6 +15,8 @@ use App\Http\Controllers\PickupManController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PickupController;
 use Illuminate\Http\Request; // ✅ Correct
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\AdminController;
 
 
 // ✅ Home Route (Public)
@@ -30,8 +32,17 @@ Route::get('/welcome', function () {
     return view('welcome');
 })->name('welcome');
 
+
+Route::get('/registration', function () {
+    return view('registration');
+});
+
 // ✅ User Registration
 Route::post('/register-user', [RegistrationController::class, 'register'])->name('register');
+
+Route::post('/send-otp', [RegistrationController::class, 'sendOtp']);
+Route::post('/verify-otp', [RegistrationController::class, 'verifyOtp']);
+
 
 // ✅ Login Page (Public)
 Route::get('/login', function () {
@@ -93,13 +104,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
 
+
 Route::get('/admin-dashboard', function () {
+    // Fetch counts and stats
     $totalUsers = DB::table('user')->count();
-    $scheduledPickups = DB::table('schedule_pickup')->where('status', 'scheduled')->count();
+    
+    // ✅ Fetch pending pickups instead of scheduled
+    $pendingPickups = DB::table('schedule_pickup')->where('status', 'pending')->count();
+    
     $completedPickups = DB::table('schedule_pickup')->where('status', 'completed')->count();
     $totalWeight = DB::table('schedule_pickup')->sum('weight') ?? 0;
 
-    // Fetch scrap pickup data grouped by category
+    // ✅ Fetch scrap pickup data grouped by category
     $scrapData = DB::table('schedule_pickup')
         ->select('category', DB::raw('COUNT(*) as total'))
         ->groupBy('category')
@@ -108,15 +124,19 @@ Route::get('/admin-dashboard', function () {
     $scrapLabels = $scrapData->pluck('category')->toArray();
     $scrapValues = $scrapData->pluck('total')->toArray();
 
+    // ✅ Pass variables to the view
     return view('admin.dashboard', compact(
         'totalUsers',
-        'scheduledPickups',
+        'pendingPickups',  // ✅ Updated variable name
         'completedPickups',
         'totalWeight',
         'scrapLabels',
         'scrapValues'
     ));
 })->name('admin.dashboard');
+
+
+
 
 Route::get('/scrap-data', function () {
     $scrapData = DB::table('schedule_pickup')
@@ -130,9 +150,18 @@ Route::get('/scrap-data', function () {
 Route::get('/pickupman-dashboard', function () {
     $totalPickups = DB::table('schedule_pickup')->count(); // Total pickups
     $pendingPickups = DB::table('schedule_pickup')->where('status', 'pending')->count(); // Pending pickups
-    $totalWeight = DB::table('schedule_pickup')->sum('total_weight');
-$totalPayments = DB::table('schedule_pickup')->sum('amount_paid');
 
+    // ✅ Sum total weight only for completed pickups
+    $totalWeight = DB::table('schedule_pickup')
+        ->where('status', 'completed')
+        ->sum(DB::raw('COALESCE(total_weight, 0)'));
+
+    // ✅ Sum payments with COALESCE to handle NULL values
+    $totalPayments = DB::table('schedule_pickup')
+        ->sum(DB::raw('COALESCE(amount_paid, 0)')); 
+
+    // Debugging (optional) to verify the value
+    // dd($totalPayments);
 
     return view('admin.pickupManDashboard', compact('totalPickups', 'pendingPickups', 'totalWeight', 'totalPayments'));
 })->name('pickupMan.dashboard');
@@ -222,3 +251,44 @@ Route::post('/upload-image', function (Request $request) {
 
     return back()->with('result', $response->json()['prediction']);
 });
+
+
+
+
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home')->with('success', 'Email verified successfully!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+
+
+
+
+// Show registration form
+Route::get('/register', [RegisterController::class, 'showRegistrationForm']);
+
+// // Send verification email (before registering)
+// Route::post('/send-verification-email', [RegisterController::class, 'sendVerificationEmail']);
+
+// // Handle email verification link
+// Route::get('/verify-email/{token}', [RegisterController::class, 'verifyEmail']);
+
+
+
+
+
+
+use App\Http\Controllers\Auth\RegisterController;
+
+Route::post('/send-verification-email', [RegisterController::class, 'sendVerificationEmail'])->name('send.verification.email');
+Route::get('/verify/{token}', [RegisterController::class, 'verifyEmail'])->name('verify.email');

@@ -61,14 +61,14 @@
             <div class="col-md-3">
     <div class="card bg-success text-white">
         <h5>Total Weight Collected</h5>
-        <p class="counter">{{ number_format($totalWeight ?? 0, 2) }} kg</p>
-    </div>
+        <p class="counter">{{ number_format($totalWeight ?: 0, 2) }} kg</p>
+        </div>
 </div>
 <div class="col-md-3">
     <div class="card bg-info text-white">
         <h5>Total Payments Made</h5>
-        <p class="counter">₹{{ number_format($totalPayments ?? 0, 2) }}</p>
-    </div>
+        <p class="counter">₹{{ number_format($totalPayments, 2) }}</p>
+        </div>
 </div>
 
         </div>

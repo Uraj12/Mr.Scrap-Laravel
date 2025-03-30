@@ -4,20 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Scrap Uncle')</title>
+    <title>@yield('title', 'Mr.Scrap')</title>
     <link rel="stylesheet" href="http://127.0.0.1:8000/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://127.0.0.1:8000/css/navbar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
 </head>
-<body>
+<body>  
 
     <!-- Navbar (Accessible on Every Page) -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="http://127.0.0.1:8000">
-                <img src="http://127.0.0.1:8000/images/logo.png" alt="ScrapUncle" width="120">
-            </a>
+            <a class="navbar-brand" href="http://127.0.0.1:8000/welcome">
+            <img src="{{ asset('scrap_images/Mr.scrap.png') }}" alt="ScrapUncle" width="80" height="80" style="object-fit: contain;">
+         </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -46,7 +46,6 @@
                 </ul>
                 <div class="d-flex align-items-center">
     <a href="http://127.0.0.1:8000/scrap-rate-list" class="btn btn-outline-primary me-2">Check Rate List</a>
-    <a href="#" class="btn btn-success">Sell Scrap</a>
 
     @if(Auth::check())
         <!-- Profile Icon -->

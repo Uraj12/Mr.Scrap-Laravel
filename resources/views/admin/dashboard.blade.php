@@ -148,8 +148,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card bg-warning text-dark">
-                    <h5>Scheduled Pickups</h5>
-                    <p class="counter">{{ $scheduledPickups }}</p>
+                    <h5>pending Pickups </h5>
+                    <p class="counter">{{ $pendingPickups }}</p>
                 </div>
             </div>
             <div class="col-md-3">
