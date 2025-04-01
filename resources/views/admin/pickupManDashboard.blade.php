@@ -13,6 +13,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
     <script src="https://bfintal.github.io/Counter-Up/jquery.counterup.min.js"></script>
+<!-- Add Bootstrap 5 JS (Without jQuery) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         body { display: flex; background: #f8f9fa; font-family: 'Arial', sans-serif; }
@@ -101,8 +103,57 @@
                         <td>{{ $pickup->category }}</td>
                         <td>{{ $pickup->date }}</td>
                         <td>{{ $pickup->time }}</td>
-                        <td>{{ $pickup->address }}</td>
-                        <td>{{ $pickup->weight }}</td>
+                       <td>
+    {{ $pickup->address }}  
+    <button class="btn btn-sm btn-info view-map" 
+        data-lat="{{ $pickup->latitude }}" 
+        data-lng="{{ $pickup->longitude }}">
+        <i class="fas fa-map-marker-alt"></i> View Map
+    </button>
+</td>
+
+<!-- Modal HTML for Google Map -->
+<!-- Modal for Location Picker -->
+<div class="modal fade" id="mapPickerModal" tabindex="-1" aria-labelledby="mapPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapPickerModalLabel">Pick a Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="width: 100%; height: 450px;"></div>
+                <p class="mt-2">Selected Coordinates: 
+                    <b>Lat:</b> <span id="selectedLat">-</span>, 
+                    <b>Lng:</b> <span id="selectedLng">-</span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveLocation">Save Location</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal HTML for Google Map -->
+<div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Location Map</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="mapFrame" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>                 <td>{{ $pickup->weight }}</td>
                         <td>{{ $pickup->remark }}</td>
                        <!-- Scrap Image Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -133,6 +184,7 @@
                                 {{ ucfirst($pickup->status) }}
                             </span>
                         </td>
+                        
                         <td>
                             <form action="{{ route('updatePickup', $pickup->id) }}" method="POST">
                                 @csrf
@@ -146,78 +198,147 @@
                                 <button type="submit" class="btn btn-sm btn-primary btn-save">Save</button>
                             </form>
                         </td>
+                        
                     </tr>
+                    
                     @endforeach
+                    
                 </tbody>
             </table>
         </div>
     </div>
+<!-- Map Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Pickup Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe id="mapFrame" width="100%" height="450" style="border:0;" loading="lazy" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modify Address Column in the Table -->
+<td>
+    {{ $pickup->address }}
+    <button class="btn btn-sm btn-info view-map" data-address="{{ urlencode($pickup->address) }}">View Map</button>
+</td>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".view-map").click(function () {
+        let lat = $(this).data("lat");  // Get latitude
+        let lng = $(this).data("lng");  // Get longitude
+        let mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyDPdXEccV8Lgh8DLP4HAzAx4KLtwMluQH0&center=${lat},${lng}&zoom=14`; // Updated URL for lat/lng
+        $("#mapFrame").attr("src", mapUrl);
+        $("#mapModal").modal("show");
+    });
+});
+
+</script>
 
     <!-- Counter-Up Animation -->
     <!-- SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-$(document).ready(function () {
-    // Initialize counter animation
-    $(".counter").each(function () {
-        let value = $(this).text().trim();
+        $(document).ready(function () {
+            // Initialize counter animation
+            $(".counter").each(function () {
+                let value = $(this).text().trim();
 
-        // Convert empty or NaN values to "0.00"
-        if (value === "" || isNaN(parseFloat(value))) {
-            $(this).text("0.00");
-        }
-    });
-
-    $(".counter").counterUp({ delay: 10, time: 1000 });
-
-    // Handle save button click event
-    $(".btn-save").click(function (event) {
-        event.preventDefault();
-
-        let row = $(this).closest("tr");
-        let totalWeight = row.find("input[name='total_weight']").val().trim();
-        let amountPaid = row.find("input[name='amount_paid']").val().trim();
-        let form = row.find("form");
-
-        // Validate inputs
-        if (totalWeight === "" || amountPaid === "") {
-            Swal.fire({
-                icon: "error",
-                title: "Missing Input",
-                text: "Please enter total weight and amount before saving.",
+                // Convert empty or NaN values to "0.00"
+                if (value === "" || isNaN(parseFloat(value))) {
+                    $(this).text("0.00");
+                }
             });
-            return;
-        }
 
-        // Ensure inputs are numeric
-        if (isNaN(totalWeight) || isNaN(amountPaid)) {
-            Swal.fire({
-                icon: "error",
-                title: "Invalid Input",
-                text: "Total weight and amount must be valid numbers.",
+            $(".counter").counterUp({ delay: 10, time: 1000 });
+
+            // Handle save button click event
+            $(".btn-save").click(function (event) {
+                event.preventDefault();
+
+                let row = $(this).closest("tr");
+                let totalWeight = row.find("input[name='total_weight']").val().trim();
+                let amountPaid = row.find("input[name='amount_paid']").val().trim();
+                let form = row.find("form");
+
+                // Validate inputs
+                if (totalWeight === "" || amountPaid === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Missing Input",
+                        text: "Please enter total weight and amount before saving.",
+                    });
+                    return;
+                }
+
+                // Ensure inputs are numeric
+                if (isNaN(totalWeight) || isNaN(amountPaid)) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Invalid Input",
+                        text: "Total weight and amount must be valid numbers.",
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to save the entered weight and payment details?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Save it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
             });
-            return;
-        }
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You want to save the entered weight and payment details?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, Save it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
         });
-    });
-});
 
+        // Initialize the map after the DOM is ready
+        function initMap() {
+            var location = { lat: 21.1702, lng: 72.8311 }; // Surat, India (you can use dynamic lat/lng values)
 
-</script>
+            // Create a map centered at the location
+            var map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+            });
+
+            // Customize the red marker icon
+            var redMarker = {
+                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png", // Red marker image URL
+                scaledSize: new google.maps.Size(40, 40), // Adjust the size of the marker
+            };
+
+            // Add a red marker at the location
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Exact Location",
+                icon: redMarker, // Use the customized red marker
+                animation: google.maps.Animation.DROP,
+            });
+        }
+
+        
+    </script>
+
+    <!-- Google Maps API Script -->
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPdXEccV8Lgh8DLP4HAzAx4KLtwMluQH0thi&callback=initMap">
+    </script>
 
 </body>
 </html>

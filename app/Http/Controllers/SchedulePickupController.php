@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SchedulePickup;
 use Illuminate\Support\Facades\Auth; // Import Auth facade
-
 
 class SchedulePickupController extends Controller
 {
@@ -29,6 +29,8 @@ class SchedulePickupController extends Controller
             'weight' => 'required|string|max:45',
             'remark' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+            'latitude' => 'required|numeric', // Validate latitude
+            'longitude' => 'required|numeric', // Validate longitude
         ]);
     
         // Handle image upload
@@ -53,6 +55,8 @@ class SchedulePickupController extends Controller
         $pickup->remark = $validated['remark'] ?? '';
         $pickup->image = $imagePath; // Store image path
         $pickup->email = $email; // Store user email
+        $pickup->latitude = $validated['latitude']; // Store latitude
+        $pickup->longitude = $validated['longitude']; // Store longitude
     
         // Save to database
         $pickup->save();
@@ -60,5 +64,5 @@ class SchedulePickupController extends Controller
         // Redirect back with a success message
         return redirect()->route('schedule.pickup')->with('success', 'Pickup scheduled successfully!');
     }
-    
 }
+
