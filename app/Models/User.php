@@ -2,28 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;   // ✅ Add this
+use Illuminate\Contracts\Auth\MustVerifyEmail;  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail   // ✅ Implement MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'user';       // ✅ Use your custom table name
-    public $timestamps = false;      // ✅ Disable timestamps
+    protected $table = 'user';               // ✅ Specify custom table name
+    public $timestamps = false;              // ✅ Disable timestamps
 
-    protected $fillable = ['name', 'email', 'password', 'phno', 'is_active', 'verification_token'];
+    // ✅ Add 'role' to the fillable array
+    protected $fillable = ['name', 'email', 'password', 'phno', 'is_active', 'verification_token', 'role'];
 
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'verification_token'];  // ✅ Hide token from API response
 
-    // ✅ Force Laravel to ignore timestamps
-    public static function boot()
-    {
-        parent::boot();
-        static::saving(function ($model) {
-            $model->timestamps = false;
-        });
-    }
+    // ✅ Improved timestamp handling (no need for extra saving event)
 }

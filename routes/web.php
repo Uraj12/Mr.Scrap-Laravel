@@ -292,3 +292,7 @@ use App\Http\Controllers\Auth\RegisterController;
 
 Route::post('/send-verification-email', [RegisterController::class, 'sendVerificationEmail'])->name('send.verification.email');
 Route::get('/verify/{token}', [RegisterController::class, 'verifyEmail'])->name('verify.email');
+
+
+
+

@@ -12,5 +12,10 @@ protected $middlewareGroups = [
         \App\Http\Middleware\VerifyCsrfToken::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,  // ✅ Email verification middleware
+        \App\Http\Middleware\NoCache::class,  // ✅ Add the NoCache middleware globally
+    \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+    \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+    \App\Http\Middleware\TrimStrings::class,
+    \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ],
 ];
