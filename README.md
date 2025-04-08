@@ -34,4 +34,17 @@ It allows users to schedule pickups, track payments, and manage scrap types — 
 ## 📷 Screenshots (optional)
 
 > Add screenshots here using:
-> 
+> ## 📸 Screenshots
+
+### 🏠 Home Page
+![Home Page](app/screenshot/home.png)
+
+### 🔐 Login Page
+![Login Page](app/screenshot/login.png)
+
+### 🧾 Pickup Request Form
+![Pickup Form](app/screenshot/r.png)
+
+### 🗂️ Admin Dashboard
+![Admin Dashboard](app/screenshot/profile.png)
+
