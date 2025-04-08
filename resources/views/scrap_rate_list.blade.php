@@ -30,7 +30,7 @@
                 </div>
                 @endforeach
             </div>
-
+    
             <!-- Note Section -->
             <div class="text-center mt-5">
                 <p class="text-muted">💡 <strong>Note:</strong> For Bulk scrap (Commercial) prices may vary.</p>
