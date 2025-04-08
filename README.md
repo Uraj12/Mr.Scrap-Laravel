@@ -46,5 +46,5 @@ It allows users to schedule pickups, track payments, and manage scrap types — 
 ![Pickup Form](app/screenshot/r.png)
 
 ### 🗂️ Admin Dashboard
-![Admin Dashboard](app/screenshot/profile.png)
+![profile](app/screenshot/profile.png)
 
