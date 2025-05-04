@@ -293,6 +293,15 @@ use App\Http\Controllers\Auth\RegisterController;
 Route::post('/send-verification-email', [RegisterController::class, 'sendVerificationEmail'])->name('send.verification.email');
 Route::get('/verify/{token}', [RegisterController::class, 'verifyEmail'])->name('verify.email');
 
+Route::get('/pickupman-report', [PickupManController::class, 'pickupManReport'])->name('pickupManReport');
+
+// Pickup Man Routes
+Route::middleware(['auth', 'pickupman'])->group(function () {
+    Route::get('/pickupman/dashboard', [PickupManController::class, 'dashboard'])->name('pickupman.dashboard');
+    Route::get('/pickupman/completed', [PickupManController::class, 'completed'])->name('pickupman.completed');
+    // ... other pickup man routes ...
+});
+
 
 
 

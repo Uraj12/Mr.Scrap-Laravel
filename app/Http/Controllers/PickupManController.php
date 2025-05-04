@@ -12,8 +12,8 @@ class PickupManController extends Controller
 {
     // Function to display the Pickup Man Dashboard
     public function pickupManDashboard() {
-        // Fetch all pickups
-        $pickups = DB::table('schedule_pickup')->get();
+        // Fetch only pending pickups
+        $pickups = DB::table('schedule_pickup')->where('status', 'pending')->get();
     
         // Ensure default values
         $totalPickups = DB::table('schedule_pickup')->count() ?? 0; 
@@ -54,5 +54,18 @@ class PickupManController extends Controller
         }
 
         return redirect()->back()->with('success', 'Pickup updated and email sent successfully!');
+    }
+
+    // Function to display the Pickup Man Report page
+    public function pickupManReport() {
+        $pickups = DB::table('schedule_pickup')->get();
+        $totalPickups = DB::table('schedule_pickup')->count() ?? 0;
+        $pendingPickups = DB::table('schedule_pickup')->where('status', 'pending')->count() ?? 0;
+        $totalWeight = DB::table('schedule_pickup')
+            ->where('status', 'completed')
+            ->sum(DB::raw('COALESCE(total_weight, 0)')) ?? 0;
+        $totalPayments = DB::table('schedule_pickup')
+            ->sum(DB::raw('COALESCE(amount_paid, 0)')) ?? 0;
+        return view('admin.pickupManReport', compact('pickups', 'totalPickups', 'pendingPickups', 'totalWeight', 'totalPayments'));
     }
 }

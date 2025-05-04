@@ -16,56 +16,51 @@
 <body>  
 
     <!-- Navbar (Accessible on Every Page) -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm py-2">
         <div class="container">
-            <a class="navbar-brand" href="http://127.0.0.1:8000/welcome">
-            <img src="{{ asset('scrap_images/Mr.scrap.png') }}" alt="ScrapUncle" width="80" height="80" style="object-fit: contain;">
-         </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/welcome">
+                <img src="{{ asset('scrap_images/Mr.scrap.png') }}" alt="ScrapUncle" class="img-fluid" style="max-height: 48px;">
+                <span class="fw-bold text-primary d-none d-md-inline">Mr.Scrap</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Services
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="http://127.0.0.1:8000/scrapcollection">Scrap Collection</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="/scrapcollection">Scrap Collection</a></li>
                             <li><a class="dropdown-item" href="#">Recycling</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="companyDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="companyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Company
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="http://127.0.0.1:8000/about">About Us</a></li>
-                            <li><a class="dropdown-item" href="http://127.0.0.1:8000/contact-us">Contact</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="companyDropdown">
+                            <li><a class="dropdown-item" href="/about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/contact-us">Contact</a></li>
                         </ul>
                     </li>
                 </ul>
-                <div class="d-flex align-items-center">
-    <a href="http://127.0.0.1:8000/scrap-rate-list" class="btn btn-outline-primary me-2">Check Rate List</a>
-
-    @if(Auth::check())
-        <!-- Profile Icon -->
-        <a href="http://127.0.0.1:8000/profile" class="user-icon">
-            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-        </a>
-
-        <!-- Camera Button for Scanning Scrap -->
-        <button class="camera-button" onclick="openCamera()">
-            📷
-        </button>
-    @else
-        <a href="http://127.0.0.1:8000/login" class="btn btn-primary">Login</a>
-    @endif
-</div>
-
-
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <a href="/scrap-rate-list" class="btn btn-outline-primary me-2">Check Rate List</a>
+                    @if(Auth::check())
+                        <!-- Profile Icon -->
+                        <a href="/profile" class="user-icon text-decoration-none" title="Profile">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </a>
+                        <!-- Camera Button for Scanning Scrap -->
+                        <button class="btn btn-outline-success ms-2" onclick="openCamera()" title="Scan Scrap">
+                            <span class="d-none d-md-inline">Scan</span> 📷
+                        </button>
+                    @else
+                        <a href="/login" class="btn btn-primary">Login</a>
+                    @endif
+                </div>
             </div>
         </div>
     </nav>
