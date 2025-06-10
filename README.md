@@ -31,10 +31,9 @@ It allows users to schedule pickups, track payments, and manage scrap types — 
 - **Auth:** OTP-based login system  
 - **APIs:** RESTful services for user, pickup, and admin modules  
 
-## 📷 Screenshots (optional)
+## 📷 Screenshots 
 
-> Add screenshots here using:
-> ## 📸 Screenshots
+
 
 ### 🏠 Home Page
 ![Home Page](app/screenshot/home.png)
